@@ -10,10 +10,13 @@
 5. Cleared `Local Storage`, `Session Storage`, and `Partitions` under `~/Library/Application Support/Hermes`.
 6. Confirmed `project-dir.json` points to `/Users/gilbertngai/Desktop/hermes/hermes-agent`.
 7. Relaunched the desktop app successfully.
+8. Committed all local modifications + personal workflow directories (`llm-wiki/`, `worklog/`) to personal fork `Marsen-22/hermes-agent` on `main`:
+   - Commit: `b7a700bcd2` — "personal: llm-wiki, worklog, local patches, and dashboard/desktop fixes"
+   - Push succeeded; working tree is clean.
 
 ## Knowledge Base Updates
 - Added `worklog/2026-07-13.md`.
+- Added `llm-wiki/session-summary-2026-07-13.md`.
 - Added Desktop File Tree and Plugin Reality Check sections to `llm-wiki/hermes-web-dashboard.md`.
-
 ## Open Questions / Next
 - None captured in this session; user indicated the desktop app is now in the desired state.
