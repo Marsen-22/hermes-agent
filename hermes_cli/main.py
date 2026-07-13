@@ -274,10 +274,12 @@ import hashlib
 import json
 import shlex
 import shutil
+import socket
 import stat
 import subprocess
+import urllib.parse
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 
 from hermes_cli.subcommands._shared import add_accept_hooks_flag as _add_accept_hooks_flag
@@ -1997,6 +1999,61 @@ def _resolve_tui_heap_mb(default_mb: int = 8192) -> int:
     return max(1536, sized) if limit_mb > 2048 else sized
 
 
+def _read_loopback_dashboard_token() -> Optional[dict]:
+    """Read the ephemeral dashboard token if one was published by a loopback server.
+
+    The file lives in ``~/.hermes/.dashboard_token`` and is written by
+    ``hermes serve`` / ``hermes dashboard`` on loopback binds. It is removed on
+    server exit. Returns a dict with ``host``, ``port``, ``token`` or ``None``.
+    """
+    try:
+        from hermes_cli.config import get_hermes_home
+
+        token_path = get_hermes_home() / ".dashboard_token"
+        if not token_path.exists():
+            return None
+        data = json.loads(token_path.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            return None
+        host = str(data.get("host", "127.0.0.1"))
+        port = int(data.get("port", 9119))
+        token = str(data.get("token", ""))
+        # Guard against a stale token left behind by a crashed server: the
+        # recorded port must actually be listening on loopback.
+        if host in ("127.0.0.1", "localhost", "::1") and not _dashboard_listening(host, port):
+            try:
+                token_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+            return None
+        return {"host": host, "port": port, "token": token}
+    except Exception:
+        return None
+
+
+def _find_running_dashboard_host_port() -> Tuple[Optional[str], Optional[int]]:
+    """Return the host/port of a running Hermes dashboard/serve, if any.
+
+    Prefers the published token file (loopback), then falls back to a TCP probe
+    of the default 127.0.0.1:9119. Public binds are not auto-detected.
+    """
+    token = _read_loopback_dashboard_token()
+    if token:
+        return token["host"], token["port"]
+    host, port = "127.0.0.1", 9119
+    try:
+        with socket.create_connection((host, port), timeout=1.0):
+            return host, port
+    except OSError:
+        return None, None
+
+
+def _build_tui_gateway_attach_url(host: str, port: int, token: str) -> str:
+    """Build the WebSocket URL the TUI GatewayClient uses to attach to the backend."""
+    qs = urllib.parse.urlencode({"token": token})
+    return f"ws://{host}:{port}/api/ws?{qs}"
+
+
 def _launch_tui(
     resume_session_id: Optional[str] = None,
     tui_dev: bool = False,
@@ -2125,6 +2182,27 @@ def _launch_tui(
     env.pop("HERMES_TUI_RESUME", None)
     if resume_session_id:
         env["HERMES_TUI_RESUME"] = resume_session_id
+
+    # Attach to a running Hermes backend (serve/dashboard) on loopback when
+    # available. This keeps TUI, dashboard chat, and desktop sharing ONE gateway
+    # process instead of each TUI launch spawning its own tui_gateway child.
+    # The TUI GatewayClient already supports HERMES_TUI_GATEWAY_URL attach mode.
+    # If no backend is running, fall through to the normal stdio-spawn path.
+    attach_url: Optional[str] = None
+    dash_host, dash_port = _find_running_dashboard_host_port()
+    if dash_host and dash_port:
+        token_info = _read_loopback_dashboard_token()
+        if token_info and token_info.get("token"):
+            attach_url = _build_tui_gateway_attach_url(
+                token_info["host"], token_info["port"], token_info["token"]
+            )
+        elif _dashboard_listening(dash_host, dash_port):
+            # No token file but something is listening: this is a public/gated
+            # bind or an older server. We cannot authenticate, so do not attach.
+            attach_url = None
+    if attach_url:
+        env["HERMES_TUI_GATEWAY_URL"] = attach_url
+        logger.debug("TUI attaching to running Hermes backend at %s", attach_url.split("?")[0])
 
     argv, cwd = _make_tui_argv(tui_dir, tui_dev)
     code: Optional[int] = None
@@ -12056,6 +12134,8 @@ def cmd_dashboard(args):
             reexec_argv.append("--no-open")
         if getattr(args, "insecure", False):
             reexec_argv.append("--insecure")
+        if getattr(args, "lan_no_auth", False):
+            reexec_argv.append("--lan-no-auth")
         if getattr(args, "skip_build", False):
             reexec_argv.append("--skip-build")
         env = os.environ.copy()
@@ -12179,18 +12259,19 @@ def cmd_dashboard(args):
     # this, a profile's configured MCP servers never connect, so desktop
     # sessions show no MCP tools.  Spawn discovery in the background here so a
     # slow/dead server can't block dashboard startup.
-    try:
-        from hermes_cli.mcp_startup import start_background_mcp_discovery
+    if not _gateway_already_running():
+        try:
+            from hermes_cli.mcp_startup import start_background_mcp_discovery
 
-        start_background_mcp_discovery(
-            logger=logger,
-            thread_name="dashboard-mcp-discovery",
-        )
-    except Exception:
-        logger.debug(
-            "Background MCP tool discovery failed at dashboard startup",
-            exc_info=True,
-        )
+            start_background_mcp_discovery(
+                logger=logger,
+                thread_name="dashboard-mcp-discovery",
+            )
+        except Exception:
+            logger.debug(
+                "Background MCP tool discovery failed at dashboard startup",
+                exc_info=True,
+            )
 
     from hermes_cli.web_server import start_server
 
@@ -12211,6 +12292,7 @@ def cmd_dashboard(args):
         allow_public=getattr(args, "insecure", False),
         initial_profile=getattr(args, "open_profile", "") or "",
         headless=_headless_backend,
+        lan_no_auth=getattr(args, "lan_no_auth", False),
     )
 
 
@@ -12413,6 +12495,21 @@ _AGENT_SUBCOMMANDS = {
 }
 
 
+def _gateway_already_running() -> bool:
+    """Return True if a gateway is already running for this Hermes profile.
+
+    Non-gateway surfaces (CLI chat, TUI, dashboard, desktop serve backend)
+    can delegate MCP tooling to that gateway instead of spawning duplicate
+    langgraph/n8n stdio servers locally.  The check is best-effort and
+    intentionally cheap: if detection fails we fall back to local discovery.
+    """
+    try:
+        from hermes_cli.gateway import find_gateway_pids
+        return bool(list(find_gateway_pids(all_profiles=False)))
+    except Exception:
+        return False
+
+
 def _is_tui_chat_launch(args) -> bool:
     return bool(getattr(args, "tui", False) or os.environ.get("HERMES_TUI") == "1")
 
@@ -12430,7 +12527,13 @@ def _command_has_dedicated_mcp_startup(args) -> bool:
 def _should_background_mcp_startup(args) -> bool:
     if _is_tui_chat_launch(args):
         return False
-    return args.command in {None, "chat", "rl"}
+    if args.command not in {None, "chat", "rl"}:
+        return False
+    if _gateway_already_running():
+        # Let the live gateway own MCP server processes; spawning them here
+        # would duplicate the langgraph/n8n stdio servers it already runs.
+        return False
+    return True
 
 
 def _prepare_agent_startup(args) -> None:
@@ -12486,6 +12589,11 @@ def _prepare_agent_startup(args) -> None:
                 "Background MCP tool discovery failed at CLI startup",
                 exc_info=True,
             )
+        _run_inline_mcp_discovery = False
+    elif _gateway_already_running():
+        # A gateway is running for this profile and already owns MCP stdio
+        # server processes. Skip both background and inline local discovery so
+        # we do not duplicate langgraph/n8n/etc. children.
         _run_inline_mcp_discovery = False
     if _run_inline_mcp_discovery:
         try:

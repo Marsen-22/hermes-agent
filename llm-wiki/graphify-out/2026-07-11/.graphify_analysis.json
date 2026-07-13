@@ -1,0 +1,253 @@
+{
+  "communities": {
+    "0": [
+      "cluster_rpc_fabric",
+      "cluster_rpc_fabric_hermes_gateway",
+      "cluster_rpc_fabric_hermes_serve",
+      "cluster_rpc_fabric_litellm",
+      "cluster_rpc_fabric_llama_cpp_rpc",
+      "cluster_rpc_fabric_lm_studio",
+      "cluster_rpc_fabric_n8n",
+      "cluster_rpc_fabric_node1",
+      "cluster_rpc_fabric_node2",
+      "cluster_rpc_fabric_node3",
+      "cluster_rpc_fabric_node4",
+      "folder_sync",
+      "folder_sync_assemble_sh",
+      "folder_sync_load_config",
+      "folder_sync_obsidian",
+      "inference_stack_rpc_cluster",
+      "session_log_bunta",
+      "session_summary_0709",
+      "working_environment"
+    ],
+    "1": [
+      "cluster_rpc_fabric_profile_default",
+      "cluster_rpc_fabric_profile_long_context",
+      "cluster_rpc_fabric_profile_messaging",
+      "cluster_rpc_fabric_profile_planner",
+      "cluster_rpc_fabric_profile_vision",
+      "model_fleet_index",
+      "model_fleet_index_gemma_polaris",
+      "model_fleet_index_lfm25_1b",
+      "model_fleet_index_ministral_3b",
+      "model_fleet_index_ornith_35b",
+      "model_fleet_index_qwen35_27b",
+      "model_fleet_index_qwen35_9b",
+      "model_fleet_index_qwen35b_fable",
+      "user_preferences",
+      "user_preferences_communication",
+      "user_preferences_profiles",
+      "user_preferences_quality"
+    ],
+    "2": [
+      "frontier_skills",
+      "frontier_skills_cluster_boundary_safe",
+      "frontier_skills_cluster_completion_gated",
+      "frontier_skills_cluster_constraint_sharp",
+      "frontier_skills_cluster_precondition",
+      "frontier_skills_cluster_source_bound",
+      "frontier_skills_cluster_state_first",
+      "frontier_skills_cluster_tool_immediate",
+      "frontier_skills_deepseek_v4_pro",
+      "frontier_skills_edge",
+      "frontier_skills_glm_52",
+      "frontier_skills_logic",
+      "frontier_skills_minimax_m3",
+      "frontier_skills_moa_config",
+      "working_environment_moa"
+    ],
+    "3": [
+      "cluster_rpc_fabric_tencentdb",
+      "pitfalls",
+      "pitfalls_config_mismatch",
+      "pitfalls_mlx_backend",
+      "pitfalls_n8n_ssrf",
+      "pitfalls_plugin_yaml_wipe",
+      "pitfalls_state_db_corruption",
+      "pitfalls_tencentdb_not_wired",
+      "session_summary_0710",
+      "skills_index_graphify",
+      "working_environment_memory",
+      "working_environment_plugins"
+    ],
+    "4": [
+      "readme",
+      "readme_cluster_rpc_fabric",
+      "readme_desktop_troubleshooting",
+      "readme_folder_sync",
+      "readme_frontier_skills",
+      "readme_inference_stack",
+      "readme_model_fleet_index",
+      "readme_pitfalls",
+      "readme_skills_index",
+      "readme_user_preferences",
+      "readme_web_dashboard",
+      "readme_working_env"
+    ],
+    "5": [
+      "model_fleet_index_scoring",
+      "pitfalls_thinking_models",
+      "session_log",
+      "session_log_july09",
+      "session_log_july11",
+      "session_log_june22",
+      "session_summary_0711",
+      "session_summary_0711_benchmark_script",
+      "session_summary_0711_langgraph_mcp",
+      "skills_index_model_fleet_benchmarking",
+      "working_environment_mcp_servers"
+    ],
+    "6": [
+      "cluster_rpc_fabric_hermes_dashboard",
+      "skills_index",
+      "skills_index_fastmcp",
+      "skills_index_hermes_agent",
+      "skills_index_hermes_web_dashboard",
+      "skills_index_llama_cpp_rpc",
+      "skills_index_llm_wiki",
+      "web_dashboard",
+      "web_dashboard_auth_gate",
+      "web_dashboard_rest_endpoints"
+    ],
+    "7": [
+      "inference_stack",
+      "inference_stack_litellm",
+      "inference_stack_litellm_config",
+      "inference_stack_lm_studio",
+      "inference_stack_ollama_cloud",
+      "pitfalls_litellm_dots_dashes"
+    ],
+    "8": [
+      "desktop_troubleshooting",
+      "desktop_troubleshooting_apply_updates_posix",
+      "desktop_troubleshooting_cmd_gui",
+      "desktop_troubleshooting_electron_main",
+      "desktop_troubleshooting_resolve_update_root"
+    ]
+  },
+  "cohesion": {
+    "0": 0.19298245614035087,
+    "1": 0.15441176470588236,
+    "2": 0.17142857142857143,
+    "3": 0.18181818181818182,
+    "4": 0.16666666666666666,
+    "5": 0.18181818181818182,
+    "6": 0.2,
+    "7": 0.4666666666666667,
+    "8": 0.6
+  },
+  "gods": [
+    {
+      "id": "cluster_rpc_fabric_node1",
+      "label": "Node1 (Mac M4 Max)",
+      "degree": 12
+    },
+    {
+      "id": "working_environment",
+      "label": "Working Environment Document",
+      "degree": 12
+    },
+    {
+      "id": "readme",
+      "label": "Hermes Second Brain README",
+      "degree": 11
+    },
+    {
+      "id": "cluster_rpc_fabric",
+      "label": "Cluster RPC Fabric",
+      "degree": 11
+    },
+    {
+      "id": "model_fleet_index",
+      "label": "Model Fleet Index",
+      "degree": 11
+    },
+    {
+      "id": "frontier_skills_logic",
+      "label": "frontier-logic (Truth Table)",
+      "degree": 8
+    },
+    {
+      "id": "inference_stack",
+      "label": "Inference Stack Document",
+      "degree": 8
+    },
+    {
+      "id": "pitfalls",
+      "label": "Pitfalls and Lessons",
+      "degree": 8
+    },
+    {
+      "id": "skills_index",
+      "label": "Skills Index Document",
+      "degree": 8
+    },
+    {
+      "id": "inference_stack_rpc_cluster",
+      "label": "llama.cpp RPC Cluster Layer",
+      "degree": 7
+    }
+  ],
+  "surprises": [
+    {
+      "source": "llama-cpp-rpc-cluster Skill",
+      "target": "llama.cpp RPC Cluster Layer",
+      "source_files": [
+        "skills-index.md",
+        "inference-stack.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities; peripheral node `llama-cpp-rpc-cluster Skill` unexpectedly reaches hub `llama.cpp RPC Cluster Layer`"
+    },
+    {
+      "source": "Working Environment Document",
+      "target": "Inference Stack Document",
+      "source_files": [
+        "working-environment.md",
+        "inference-stack.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Pitfall: LiteLLM Model Name Dots to Dashes",
+      "target": "LiteLLM Proxy Layer",
+      "source_files": [
+        "pitfalls-and-lessons.md",
+        "inference-stack.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Pitfall: LiteLLM Model Name Dots to Dashes` unexpectedly reaches hub `LiteLLM Proxy Layer`"
+    },
+    {
+      "source": "Session Summary 2026-07-11",
+      "target": "Model Fleet Index",
+      "source_files": [
+        "session-summary-2026-07-11.md",
+        "model-fleet-index.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "July 9 Session: RPC Cluster & DeepSeek V4",
+      "target": "Session Summary 2026-07-09",
+      "source_files": [
+        "session-log-2026-06-22-to-2026-07-11.md",
+        "session-summary-2026-07-09.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 40776,
+    "output": 20278
+  }
+}

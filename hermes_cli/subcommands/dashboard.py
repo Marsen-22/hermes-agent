@@ -40,6 +40,17 @@ def _add_server_runtime_args(parser) -> None:
         ),
     )
     parser.add_argument(
+        "--lan-no-auth",
+        dest="lan_no_auth",
+        action="store_true",
+        help=(
+            "Skip the auth gate for private LAN binds (RFC1918: 192.168.x.x, "
+            "10.x.x.x, 172.16-31.x.x) and 0.0.0.0. Intended for trusted "
+            "homelab/private-cluster setups where every client is your own "
+            "machine. Public internet binds still require auth."
+        ),
+    )
+    parser.add_argument(
         "--skip-build",
         action="store_true",
         help=(

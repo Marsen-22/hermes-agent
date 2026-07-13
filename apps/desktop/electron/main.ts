@@ -6552,8 +6552,10 @@ async function spawnPoolBackend(profile, entry) {
   const token = crypto.randomBytes(32).toString('base64url')
   // --profile wins over the inherited HERMES_HOME env (see _apply_profile_override
   // step 3 in hermes_cli/main.py), so the child re-homes to this profile.
-  // --port 0: the OS assigns an ephemeral port; the child announces it on stdout.
-  const backendArgs = ['--profile', profile, 'serve', '--host', '127.0.0.1', '--port', '0']
+  // Bind to 0.0.0.0:9119 so both the local renderer and remote LAN peers (e.g.
+  // Node4) can reach this canonical single gateway. Authentication is still
+  // enforced via the ephemeral session token below.
+  const backendArgs = ['--profile', profile, 'serve', '--host', '0.0.0.0', '--port', '9119']
   const backend = await ensureRuntime(resolveHermesBackend(backendArgs))
   // Route old runtimes (no `serve`) through the legacy `dashboard --no-open`.
   backend.args = getBackendArgsForRuntime(backend)
@@ -6792,8 +6794,10 @@ async function startHermes() {
     await waitForUpdateToFinish()
 
     const token = crypto.randomBytes(32).toString('base64url')
-    // --port 0: the OS assigns an ephemeral port; the child announces it on stdout.
-    const backendArgs = ['serve', '--host', '127.0.0.1', '--port', '0']
+    // Bind the canonical gateway to 0.0.0.0:9119 so the local desktop app and
+    // remote peers on the LAN (e.g. Node4) share one backend. Auth is enforced
+    // by the ephemeral session token injected below.
+    const backendArgs = ['serve', '--host', '0.0.0.0', '--port', '9119']
     // Pin the desktop's chosen profile via the global --profile flag. This is
     // deterministic (it wins over the sticky ~/.hermes/active_profile file) and
     // resolves HERMES_HOME the same way `hermes -p <name>` does on the CLI. An

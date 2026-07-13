@@ -34,6 +34,14 @@ from typing import Any
 from tui_gateway import server
 
 _log = logging.getLogger(__name__)
+def _gateway_already_running() -> bool:
+    """Best-effort check for a live gateway in this Hermes profile."""
+    try:
+        from hermes_cli.gateway import find_gateway_pids
+        return bool(list(find_gateway_pids(all_profiles=False)))
+    except Exception:
+        return False
+
 
 # Max seconds a pool-dispatched handler will block waiting for the event loop
 # to flush a WS frame before we mark the transport dead. Protects handler
@@ -311,10 +319,11 @@ async def handle_ws(ws: Any) -> None:
         # first agent build can pick up already-spawning servers. (#38945)
         from hermes_cli.mcp_startup import start_background_mcp_discovery
 
-        start_background_mcp_discovery(
-            logger=_log,
-            thread_name="tui-ws-mcp-discovery",
-        )
+        if not _gateway_already_running():
+            start_background_mcp_discovery(
+                logger=_log,
+                thread_name="tui-ws-mcp-discovery",
+            )
 
         ready_ok = await transport.write_async(
             {

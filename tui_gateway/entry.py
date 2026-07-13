@@ -321,7 +321,7 @@ def main():
         # Be conservative: if we can't decide, fall back to attempting
         # discovery (still backgrounded, so it can't block startup).
         _has_mcp_servers = True
-    if _has_mcp_servers:
+    if _has_mcp_servers and not _gateway_already_running():
         def _discover_mcp_background() -> None:
             try:
                 from hermes_cli.mcp_startup import (
@@ -345,6 +345,15 @@ def main():
         # already-spawning fast servers to land (see wait_for_mcp_discovery).
         global _mcp_discovery_thread
         _mcp_discovery_thread = _mcp_thread
+
+
+def _gateway_already_running() -> bool:
+    """Best-effort check for a live gateway in this Hermes profile."""
+    try:
+        from hermes_cli.gateway import find_gateway_pids
+        return bool(list(find_gateway_pids(all_profiles=False)))
+    except Exception:
+        return False
 
     if not write_json({
         "jsonrpc": "2.0",

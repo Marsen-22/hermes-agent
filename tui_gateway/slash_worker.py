@@ -65,12 +65,26 @@ def _is_orphaned(original_ppid, parent_create_time, getppid=os.getppid) -> bool:
         return True
 
 
+def _gateway_already_running() -> bool:
+    """Best-effort check for a live gateway in this Hermes profile."""
+    try:
+        from hermes_cli.gateway import find_gateway_pids
+        return bool(list(find_gateway_pids(all_profiles=False)))
+    except Exception:
+        return False
+
+
 def _prepare_slash_worker_runtime() -> None:
     """Start bounded MCP discovery before HermesCLI snapshots tools.
 
     Each slash_worker child is its own process — the parent ``hermes serve``
     discovery thread does not populate this registry (issue #61891).
+    When a gateway is already running for this profile we skip local discovery
+    entirely to avoid duplicating its langgraph/n8n stdio server processes.
     """
+    if _gateway_already_running():
+        return
+
     import logging
 
     from hermes_cli.mcp_startup import (

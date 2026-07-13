@@ -1,0 +1,234 @@
+{
+  "communities": {
+    "0": [
+      "frontier_skills",
+      "frontier_skills_cluster_boundary_safe",
+      "frontier_skills_cluster_completion_gated",
+      "frontier_skills_cluster_constraint_sharp",
+      "frontier_skills_cluster_precondition",
+      "frontier_skills_cluster_source_bound",
+      "frontier_skills_cluster_state_first",
+      "frontier_skills_cluster_tool_immediate",
+      "frontier_skills_deepseek_v4_pro",
+      "frontier_skills_edge",
+      "frontier_skills_glm_52",
+      "frontier_skills_logic",
+      "frontier_skills_minimax_m3",
+      "frontier_skills_moa_config",
+      "working_environment_moa"
+    ],
+    "1": [
+      "session_summary_0710",
+      "skills_index",
+      "skills_index_fastmcp",
+      "skills_index_graphify",
+      "skills_index_hermes_agent",
+      "skills_index_hermes_web_dashboard",
+      "skills_index_llama_cpp_rpc",
+      "skills_index_llm_wiki",
+      "skills_index_model_fleet_benchmarking",
+      "web_dashboard",
+      "web_dashboard_auth_gate",
+      "web_dashboard_rest_endpoints"
+    ],
+    "2": [
+      "folder_sync",
+      "folder_sync_assemble_sh",
+      "folder_sync_load_config",
+      "folder_sync_obsidian",
+      "user_preferences",
+      "user_preferences_communication",
+      "user_preferences_profiles",
+      "user_preferences_quality",
+      "working_environment",
+      "working_environment_memory",
+      "working_environment_plugins"
+    ],
+    "3": [
+      "session_log",
+      "session_log_bunta",
+      "session_log_july09",
+      "session_log_july11",
+      "session_log_june22",
+      "session_summary_0709",
+      "session_summary_0711",
+      "session_summary_0711_benchmark_script",
+      "session_summary_0711_langgraph_mcp",
+      "working_environment_mcp_servers"
+    ],
+    "4": [
+      "cluster_optimization_report",
+      "cluster_rpc_fabric",
+      "model_fleet_index",
+      "pitfalls_and_lessons",
+      "session_summary_2026_07_11_late",
+      "session_summary_2026_07_11_late_night",
+      "session_summary_2026_07_11_night",
+      "session_summary_2026_07_12",
+      "session_summary_2026_07_12_fleet_optimization"
+    ],
+    "5": [
+      "inference_stack",
+      "inference_stack_litellm",
+      "inference_stack_litellm_config",
+      "inference_stack_lm_studio",
+      "inference_stack_ollama_cloud",
+      "inference_stack_rpc_cluster"
+    ],
+    "6": [
+      "desktop_troubleshooting",
+      "desktop_troubleshooting_apply_updates_posix",
+      "desktop_troubleshooting_cmd_gui",
+      "desktop_troubleshooting_electron_main",
+      "desktop_troubleshooting_resolve_update_root"
+    ],
+    "7": [
+      "comfyui"
+    ],
+    "8": [
+      "readme"
+    ]
+  },
+  "cohesion": {
+    "0": 0.17142857142857143,
+    "1": 0.16666666666666666,
+    "2": 0.18181818181818182,
+    "3": 0.2,
+    "4": 0.3333333333333333,
+    "5": 0.5333333333333333,
+    "6": 0.6,
+    "7": 1.0,
+    "8": 1.0
+  },
+  "gods": [
+    {
+      "id": "frontier_skills_logic",
+      "label": "frontier-logic (Truth Table)",
+      "degree": 8
+    },
+    {
+      "id": "inference_stack",
+      "label": "Inference Stack Document",
+      "degree": 8
+    },
+    {
+      "id": "skills_index",
+      "label": "Skills Index Document",
+      "degree": 8
+    },
+    {
+      "id": "working_environment",
+      "label": "Working Environment Document",
+      "degree": 8
+    },
+    {
+      "id": "model_fleet_index",
+      "label": "Model Fleet Index",
+      "degree": 6
+    },
+    {
+      "id": "user_preferences",
+      "label": "User Preferences Document",
+      "degree": 5
+    },
+    {
+      "id": "pitfalls_and_lessons",
+      "label": "Hermes Pitfalls & Lessons Learned",
+      "degree": 5
+    },
+    {
+      "id": "desktop_troubleshooting",
+      "label": "Desktop Update Troubleshooting",
+      "degree": 4
+    },
+    {
+      "id": "folder_sync",
+      "label": "Hermes Folder Sync Architecture",
+      "degree": 4
+    },
+    {
+      "id": "inference_stack_litellm",
+      "label": "LiteLLM Proxy Layer",
+      "degree": 4
+    }
+  ],
+  "surprises": [
+    {
+      "source": "Working Environment Document",
+      "target": "Inference Stack Document",
+      "source_files": [
+        "working-environment.md",
+        "inference-stack.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "llama-cpp-rpc-cluster Skill",
+      "target": "llama.cpp RPC Cluster Layer",
+      "source_files": [
+        "skills-index.md",
+        "inference-stack.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Session Summary 2026-07-11",
+      "target": "Model Fleet Index",
+      "source_files": [
+        "session-summary-2026-07-11.md",
+        "model-fleet-index.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "Hermes Pitfalls & Lessons Learned",
+      "target": "Session Summary — 2026-07-11 (Late Night)",
+      "source_files": [
+        "pitfalls-and-lessons.md",
+        "session-summary-2026-07-11-late-night.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Session Summary — 2026-07-11 (Late Night)` unexpectedly reaches hub `Hermes Pitfalls & Lessons Learned`"
+    },
+    {
+      "source": "Hermes Pitfalls & Lessons Learned",
+      "target": "Session Summary — 2026-07-12",
+      "source_files": [
+        "pitfalls-and-lessons.md",
+        "session-summary-2026-07-12.md"
+      ],
+      "confidence": "INFERRED",
+      "relation": "conceptually_related_to",
+      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; peripheral node `Session Summary — 2026-07-12` unexpectedly reaches hub `Hermes Pitfalls & Lessons Learned`"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `Working Environment Document` connect `Working Environment Document` to `frontier-logic (Truth Table)`, `Skills Index Document`, `Session Log June 22 to July 11`, `Inference Stack Document`?",
+      "why": "High betweenness centrality (0.535) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `MOA (Mixture of Agents) Config` connect `frontier-logic (Truth Table)` to `Working Environment Document`?",
+      "why": "High betweenness centrality (0.286) - this node is a cross-community bridge."
+    },
+    {
+      "type": "verify_inferred",
+      "question": "Are the 2 inferred relationships involving `Working Environment Document` (e.g. with `Inference Stack Document` and `User Preferences Document`) actually correct?",
+      "why": "`Working Environment Document` has 2 INFERRED edges - model-reasoned connections that need verification."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `Dashboard Auth Gate`, `Dashboard REST Endpoints`, `frontier-edge (Output Signal)` to the rest of the system?",
+      "why": "23 weakly-connected nodes found - possible documentation gaps or missing edges."
+    }
+  ]
+}

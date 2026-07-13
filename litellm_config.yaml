@@ -1,0 +1,120 @@
+# LiteLLM proxy config — routes to LM Studio on Mac (192.168.50.101:8000)
+# Per-model sampling params are set in LM Studio's per-model load config
+# (NOT here as request-time overrides) — see:
+#   ~/.lmstudio/.internal/user-concrete-model-default-config/<publisher>/<model>/
+# 9 chat models + audio + embedding
+
+model_list:
+  # === Chat models (assigned to profiles) ===
+
+  # long-context profile — 35B, 1M context, deterministic (temp=0 per model card)
+  - model_name: ornith-1-0-35b-1m
+    litellm_params:
+      model: openai/ornith-1.0-35b-1m
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 1048576
+
+  # planner profile — 27B reasoning, thinking ON
+  - model_name: qwen3-5-27b-claude-4-6-opus-reasoning-distilled
+    litellm_params:
+      model: openai/qwen3.5-27b-claude-4.6-opus-reasoning-distilled
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 262144
+
+  # analyst profile — 27B, thinking OFF
+  - model_name: qwen3-6-27b-claude-opus-deepseek-distilled-imatrix-mtp
+    litellm_params:
+      model: openai/qwen3.6-27b-claude-opus-deepseek-distilled-imatrix-mtp
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 262144
+      extra_body:
+        chat_template_kwargs:
+          enable_thinking: false
+
+  # coder profile — 9B, top agentic score
+  - model_name: qwen3-5-9b-claude-4-6-highiq-instruct-heretic-uncensored
+    litellm_params:
+      model: openai/qwen3.5-9b-claude-4.6-highiq-instruct-heretic-uncensored
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 262144
+
+  # coder-alt — Qwen2.5-Coder-7B, purpose-built for code, optimized temp=0.2/top_p=0.8
+  - model_name: qwen2-5-coder-7b-instruct
+    litellm_params:
+      model: openai/qwen2.5-coder-7b-instruct
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 131072
+
+  # researcher profile — 35B MoE, fastest
+  - model_name: qwen35b-a3b-fable-sft-abliterated
+    litellm_params:
+      model: openai/qwen35b-a3b-fable-sft-abliterated
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 262144
+
+  # scout profile — 3B, quick lookups
+  - model_name: ministral-3-3b-instruct-2512
+    litellm_params:
+      model: openai/ministral-3-3b-instruct-2512
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 262144
+
+  # vision profile — 12B multimodal
+  - model_name: gemma-3-12b-it-vl-polaris-glm-4-7-flash-var-thinking-instruct-heretic-uncensored-i1
+    litellm_params:
+      model: openai/gemma-3-12b-it-vl-polaris-glm-4.7-flash-var-thinking-instruct-heretic-uncensored-i1
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 131072
+
+  # messaging-bots profile — 1.2B, fastest chat
+  - model_name: lfm2-5-1-2b-instruct
+    litellm_params:
+      model: openai/lfm2.5-1.2b-instruct
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 128000
+
+  # deepseek profile — 9B, top agentic score, thinking ON
+  - model_name: qwen3-5-9b-deepseek-v4-flash-mtp
+    litellm_params:
+      model: openai/qwen3.5-9b-deepseek-v4-flash-mtp
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 262144
+
+  # === Utility models ===
+
+  - model_name: lfm2-5-audio-1-5b
+    litellm_params:
+      model: openai/lfm2.5-audio-1.5b
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 128000
+
+  - model_name: text-embedding-nomic-embed-text-v1-5
+    litellm_params:
+      model: openai/text-embedding-nomic-embed-text-v1.5
+      api_base: http://192.168.50.101:8000/v1
+      api_key: lm-studio
+      context_window: 8192
+
+router_settings:
+  routing_strategy: usage-based-routing-v2
+  allowed_fails: 3
+  num_retries: 2
+
+general_settings:
+  master_key: sk-dummy
+
+litellm_settings:
+  drop_params: true
+  request_timeout: 120
+  disable_reasoning: true

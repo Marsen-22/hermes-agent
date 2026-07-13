@@ -287,13 +287,14 @@ _reveal_timestamps: List[float] = []
 _REVEAL_MAX_PER_WINDOW = 5
 _REVEAL_WINDOW_SECONDS = 30
 
-# CORS: restrict to localhost origins only.  The web UI is intended to run
-# locally; binding to 0.0.0.0 with allow_origins=["*"] would let any website
-# read/modify config and secrets.
+# CORS: restrict to local/LAN origins. The web UI is intended to run locally;
+# when bound to 0.0.0.0 we also allow private LAN origins so remote desktop peers
+# (e.g. Node4) on the same network can reach the canonical gateway. Public
+# internet origins remain blocked.
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$",
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -390,7 +391,28 @@ _LOOPBACK_HOST_VALUES: frozenset = frozenset({
 })
 
 
-def should_require_auth(host: str, allow_public: bool = False) -> bool:
+def _is_lan_host(host: str) -> bool:
+    """True for RFC1918 private addresses and the all-interfaces sentinel."""
+    h = host.lower()
+    if h in {"0.0.0.0", "::"}:
+        return True
+    if h.startswith("192.168."):
+        return True
+    if h.startswith("10."):
+        return True
+    if h.startswith("172."):
+        parts = h.split(".")
+        if len(parts) >= 2:
+            try:
+                second = int(parts[1])
+                if 16 <= second <= 31:
+                    return True
+            except ValueError:
+                pass
+    return False
+
+
+def should_require_auth(host: str, allow_public: bool = False, lan_no_auth: bool = False) -> bool:
     """Return True iff the dashboard auth gate must be active.
 
     Truth table:
@@ -408,8 +430,16 @@ def should_require_auth(host: str, allow_public: bool = False) -> bool:
     unauthenticated-public-dashboard hole behind the June 2026 ``hermes-0day``
     MCP-persistence campaign, where ``--insecure --host 0.0.0.0`` left the
     config/MCP/agent surface open to internet scanners.
+
+    ``lan_no_auth`` is the private-cluster opt-out: when True, RFC1918 binds and
+    the all-interfaces sentinel skip the auth gate. Public internet-facing binds
+    still require auth regardless.
     """
-    return host not in _LOOPBACK_HOST_VALUES
+    if host in _LOOPBACK_HOST_VALUES:
+        return False
+    if lan_no_auth and _is_lan_host(host):
+        return False
+    return True
 
 
 def _is_accepted_host(host_header: str, bound_host: str) -> bool:
@@ -16937,6 +16967,45 @@ def _write_dashboard_ready_file(actual_port: int) -> None:
         _log.warning("Failed to write dashboard ready file %r: %s", target, exc)
 
 
+def _publish_loopback_dashboard_token(host: str, actual_port: int) -> None:
+    """On loopback/LAN binds, write the ephemeral session token so local TUI can attach.
+
+    The token is needed for the ``/api/ws`` WebSocket upgrade when the dashboard
+    is not running behind the OAuth gate. Loopback-only: a public bind must
+    never expose the token on disk. The file is written to
+    ``~/.hermes/.dashboard_token`` and removed when the process exits.
+
+    When the server is bound to the all-interfaces address (``0.0.0.0`` / ``::``)
+    we still publish the token, but normalize the host to ``127.0.0.1`` so the
+    local renderer/TUI has a usable loopback URL.
+    """
+    # Treat 0.0.0.0 / :: as "publish for local clients" but use 127.0.0.1 in the file.
+    if host in ("0.0.0.0", "::"):
+        host = "127.0.0.1"
+    if host not in ("127.0.0.1", "localhost", "::1"):
+        return
+    try:
+        token_path = get_hermes_home() / ".dashboard_token"
+        token_path.write_text(
+            json.dumps(
+                {"host": host, "port": int(actual_port), "token": _SESSION_TOKEN},
+                separators=(",", ":"),
+            ),
+            encoding="utf-8",
+        )
+
+        @atexit.register
+        def _remove_loopback_dashboard_token() -> None:
+            try:
+                token_path.unlink(missing_ok=True)
+            except Exception:
+                pass
+
+        _log.debug("Published loopback dashboard token to %s", token_path)
+    except Exception as exc:
+        _log.warning("Failed to publish loopback dashboard token: %s", exc)
+
+
 def _maybe_open_browser(
     host: str, actual_port: int, open_browser: bool, initial_profile: str
 ) -> None:
@@ -16987,6 +17056,7 @@ def start_server(
     allow_public: bool = False,
     initial_profile: str = "",
     headless: bool = False,
+    lan_no_auth: bool = False,
 ):
     """Start the web UI server.
 
@@ -17012,7 +17082,7 @@ def start_server(
     # injection / WS-auth paths can branch on it consistently.  Phase 3.5
     # uses this to decide whether to refuse the bind, log the gate-on
     # banner, and enable uvicorn proxy_headers.
-    app.state.auth_required = should_require_auth(host)
+    app.state.auth_required = should_require_auth(host, lan_no_auth=lan_no_auth)
 
     # ``--insecure`` no longer disables the auth gate (June 2026 hardening:
     # the hermes-0day MCP-persistence campaign abused unauthenticated public
@@ -17154,6 +17224,7 @@ def start_server(
             app.state.bound_port = actual_port
 
             _write_dashboard_ready_file(actual_port)
+            _publish_loopback_dashboard_token(host, actual_port)
             # Port-discovery sentinel parsed by the desktop spawn. `serve` is a
             # plain backend, not a dashboard, so it announces a neutral token;
             # `dashboard` keeps the legacy one. The desktop matches either.

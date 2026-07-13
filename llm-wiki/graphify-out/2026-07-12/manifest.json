@@ -1,0 +1,47 @@
+{
+  "frontier-skills.md": {
+    "mtime": 1783843690.896435,
+    "ast_hash": "ba00d8dbfb3270f1f78cbe4c1465e41e",
+    "semantic_hash": "ba00d8dbfb3270f1f78cbe4c1465e41e"
+  },
+  "hermes-folder-sync.md": {
+    "mtime": 1783843690.9013708,
+    "ast_hash": "db1563c9a2acfabbfb81f40f755cf450",
+    "semantic_hash": "db1563c9a2acfabbfb81f40f755cf450"
+  },
+  "inference-stack.md": {
+    "mtime": 1783843690.9017687,
+    "ast_hash": "799b38288a6198c4e18ec36d5e73c91e",
+    "semantic_hash": "799b38288a6198c4e18ec36d5e73c91e"
+  },
+  "session-log-2026-06-22-to-2026-07-11.md": {
+    "mtime": 1783843690.9024825,
+    "ast_hash": "6323448a63a62e34521500f0da3b3892",
+    "semantic_hash": "6323448a63a62e34521500f0da3b3892"
+  },
+  "session-summary-2026-07-10.md": {
+    "mtime": 1783843690.9027114,
+    "ast_hash": "19943eef9a83cb8ecc32e416f0d22b50",
+    "semantic_hash": "19943eef9a83cb8ecc32e416f0d22b50"
+  },
+  "session-summary-2026-07-11.md": {
+    "mtime": 1783843690.9033573,
+    "ast_hash": "c1d37d0880920c28e6b4b9d6e2112e6e",
+    "semantic_hash": "c1d37d0880920c28e6b4b9d6e2112e6e"
+  },
+  "skills-index.md": {
+    "mtime": 1783843690.903907,
+    "ast_hash": "da8d52a424a4be6e1fee1b25fbcb4c49",
+    "semantic_hash": "da8d52a424a4be6e1fee1b25fbcb4c49"
+  },
+  "user-preferences.md": {
+    "mtime": 1783843690.9040592,
+    "ast_hash": "e8af71120c13da9cdb1c5f3dd3ce8528",
+    "semantic_hash": "e8af71120c13da9cdb1c5f3dd3ce8528"
+  },
+  "working-environment.md": {
+    "mtime": 1783843690.9042778,
+    "ast_hash": "3f90bdc359bb0becaeb39aa2f25f5f37",
+    "semantic_hash": "3f90bdc359bb0becaeb39aa2f25f5f37"
+  }
+}
