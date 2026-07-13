@@ -5005,6 +5005,10 @@ def discover_mcp_tools() -> List[str]:
     Returns:
         List of all registered MCP tool names.
     """
+    if os.environ.get("HERMES_SKIP_MCP_DISCOVERY") == "1":
+        logger.debug("Skipping discover_mcp_tools: HERMES_SKIP_MCP_DISCOVERY=1")
+        return []
+
     if not _MCP_AVAILABLE:
         logger.debug("MCP SDK not available -- skipping MCP tool discovery")
         return []

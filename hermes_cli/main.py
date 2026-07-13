@@ -11977,6 +11977,11 @@ def _maybe_setup_dashboard_auth_interactively(args) -> None:
 
 def cmd_dashboard(args):
     """Start the web UI server, or (with --stop/--status) manage running ones."""
+    # Dashboard / headless serve processes are MCP consumers, not MCP owners.
+    # Only the gateway should spawn MCP servers; otherwise every dashboard,
+    # desktop backend, and TUI worker duplicates the configured MCP children.
+    os.environ["HERMES_SKIP_MCP_DISCOVERY"] = "1"
+
     # --status: report running dashboards and exit, no deps needed.
     if getattr(args, "status", False):
         count = _report_dashboard_status()
@@ -12423,6 +12428,9 @@ def _command_has_dedicated_mcp_startup(args) -> bool:
     if args.command == "gateway" and getattr(args, "gateway_command", None) == "run":
         return True
     if args.command == "cron" and getattr(args, "cron_command", None) in {"run", "tick"}:
+        return True
+    # Dashboard / headless serve are MCP consumers; spawn is gated in cmd_dashboard.
+    if args.command in {"dashboard", "serve"}:
         return True
     return False
 

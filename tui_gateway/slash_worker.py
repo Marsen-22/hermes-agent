@@ -73,6 +73,9 @@ def _prepare_slash_worker_runtime() -> None:
     """
     import logging
 
+    # Slash workers are MCP consumers; the gateway is the MCP owner.
+    os.environ["HERMES_SKIP_MCP_DISCOVERY"] = "1"
+
     from hermes_cli.mcp_startup import (
         start_background_mcp_discovery,
         wait_for_mcp_discovery,

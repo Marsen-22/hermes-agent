@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import threading
 from contextlib import nullcontext
 from typing import Optional
@@ -27,6 +28,10 @@ def _has_configured_mcp_servers() -> bool:
 def start_background_mcp_discovery(*, logger, thread_name: str) -> None:
     """Spawn one shared background MCP discovery thread for this process."""
     global _mcp_discovery_started, _mcp_discovery_thread
+
+    if os.environ.get("HERMES_SKIP_MCP_DISCOVERY") == "1":
+        logger.debug("Skipping MCP discovery: HERMES_SKIP_MCP_DISCOVERY=1")
+        return
 
     with _mcp_discovery_lock:
         if _mcp_discovery_started:
