@@ -105,3 +105,89 @@ Stale launchers that referenced the `AI Sandbox` path were moved to `archive-loo
 | `\.local\bin\node3-worker.cmd` | Pointed to non-existent `AI Sandbox\.hermes\profiles\node4-worker\...` |
 
 `\.local\bin\node1-remote.bat` was left in place because it just calls the system `hermes` executable.
+
+## Documents Hermes artifacts (2026-07-13)
+
+Node4-specific operational notes and scripts from `\Documents\` were consolidated into `archive-loose/user-home/documents/`:
+
+| Source | Destination |
+|--------|-------------|
+| `\Documents\node4-gateway-debug.ps1` | `archive-loose/user-home/documents/` |
+| `\Documents\node4-gateway-err.txt` | `archive-loose/user-home/documents/` |
+| `\Documents\node4-ssh-elevated.ps1` | `archive-loose/user-home/documents/` |
+| `\Documents\node4-ssh-setup.ps1` | `archive-loose/user-home/documents/` |
+| `\Documents\node4-ssh-status.md` | `archive-loose/user-home/documents/` |
+| `\Documents\node4-status.md` | `archive-loose/user-home/documents/` |
+| `\Documents\node4-webhook-routes.md` | `archive-loose/user-home/documents/` |
+| `\Documents\node4-webhook-routes.ps1` | `archive-loose/user-home/documents/` |
+
+`\Documents\Node2-RDP.rdp` was left in place — it is a node2 management shortcut, not a loose Hermes artifact.
+
+## Import from previous SSOT tarball (2026-07-13)
+
+`repo_main.tar.gz` contained a previous `hermes-cluster-ssot-main` snapshot. It is superseded by the current canonical Hermes home, but unique artifacts were imported into the live framework without overwriting existing files:
+
+| Source | Imported to | Note |
+|--------|-------------|------|
+| `repo_main.tar.gz/nodes/node4/profiles/mac-gateway/` | `.hermes/repo/profiles/mac-gateway/` | Node4 mac-gateway profile. |
+| `repo_main.tar.gz/nodes/node4/profiles/mac-gateway/` | `.hermes/repo/nodes/node4/profiles/mac-gateway/` | Cluster SSOT copy. |
+| `repo_main.tar.gz/nodes/node4/profiles/researcher.bak.20260701-203734/` | `.hermes/repo/profiles/researcher.bak.20260701-203734/` | Archived researcher profile. |
+| `repo_main.tar.gz/nodes/node4/profiles/researcher.bak.20260701-203734/` | `.hermes/repo/nodes/node4/profiles/researcher.bak.20260701-203734/` | Cluster SSOT copy. |
+| `repo_main.tar.gz/nodes/node4/profiles/trainer.bak.20260701-203735/` | `.hermes/repo/profiles/trainer.bak.20260701-203735/` | Archived trainer profile. |
+| `repo_main.tar.gz/nodes/node4/profiles/trainer.bak.20260701-203735/` | `.hermes/repo/nodes/node4/profiles/trainer.bak.20260701-203735/` | Cluster SSOT copy. |
+| `repo_main.tar.gz/repo/skills/.hub/` | `.hermes/repo/skills/.hub/` | Unique skill category not present in current framework. |
+
+The remainder of the tarball (which duplicated the current `.hermes/repo/` and `.hermes/synced/` SSOT) was kept archived under `archive-loose/downloads/repo_main.tar.gz`.
+
+## Operational scripts consolidated into framework (2026-07-13)
+
+Node4-specific operational files were moved from `archive-loose/` into `scripts/loose/` so they live inside the framework source tree:
+
+| Source | Destination |
+|--------|-------------|
+| `archive-loose/user-home/documents/*` | `scripts/loose/node4-ops/` |
+| `archive-loose/user-home/launchers/*` | `scripts/loose/launchers/` |
+| `archive-loose/user-home/temp-scripts/*` | `scripts/loose/temp-scripts/` |
+| `archive-loose/scratch-scripts/*` | `scripts/loose/scratch/` |
+
+## CUDA installer moved outside vault (2026-07-13)
+
+The 2.5 GB CUDA installer was moved from `archive-loose/downloads/cuda-installer/` to `C:\Users\juns6\Hermes-Archive\cuda-installer\` to keep it out of the Obsidian vault sync.
+
+## Canonization execution (2026-07-13)
+
+Executed against node4 `.hermes/` using node1 Mac as primary SSOT reference.
+
+### Safety backup
+- Backed up node4 live `state.db` + `state.db-shm` + `state.db-wal` to `C:\Users\juns6\Hermes-Archive\node4-state-backup-20260713/`.
+
+### Phase 1: evacuated corrupt/stale backups
+Moved 50 files (~1.41 GB) from `.hermes/` root to `C:\Users\juns6\Hermes-Archive\corruption-backups-node4/`, including:
+- `state.db.corrupted` and `state.db.malformed-backup-*`
+- `state.db.bak`, `state.db.bak3`, `state.db.bak4`
+- `config.yaml.corrupted-after-upgrade`
+- older `config.yaml.bak.*` and `.env.bak.*` files
+
+### Phase 2: archived state-snapshots
+Moved `.hermes/state-snapshots/` (1.1 MB on node4) to `C:\Users\juns6\Hermes-Archive\state-snapshots-node4/`.
+
+### Phase 3: resynced SSOT from node1 Mac
+- Archived node4-only `repo/profiles/{mac-gateway, researcher.bak.20260701-203734, trainer.bak.20260701-203735}` to `Hermes-Archive\node4-ssot-extras/`.
+- Replaced node4 `.hermes/repo/` and `.hermes/synced/` with clean copies from node1 (`/Users/gilbertngai/Desktop/hermes/hermes-agent/.hermes/repo` and `synced`).
+- Stored node1 tar archives in `Hermes-Archive\node1-ssot-tars/` for audit trail.
+
+### Phase 4: promoted runtime-only profiles to SSOT
+Copied canonical files for `analyst`, `long-context`, `scout`, `vision` from `.hermes/profiles/` into `.hermes/repo/profiles/` and `.hermes/synced/profiles/`.
+
+### Phase 5: promoted runtime-only skill categories to SSOT
+Copied `.hub`, `blockchain`, `communication`, `evaluation`, `finance`, `gaming`, `health`, `mcp`, `migration`, `payments`, `security`, `tencentdb-databaseclaw-skill`, `web-development`, `worklog` from `.hermes/skills/` into `.hermes/repo/skills/` and `.hermes/synced/skills/`.
+
+### Phase 6: cleaned node-local artifacts from SSOT profiles
+Removed `lsp/`, `mcp-installs/`, `skills/`, `bin/`, `pets/`, `plugins/`, `cron/`, `hooks/`, `pairing/`, `logs/`, `sessions/`, `state.db*`, etc. from both `repo/profiles/` and `synced/profiles/`, keeping only canonical `config.yaml`, `SOUL.md`, `profile.yaml`, `.env`.
+
+### Final divergence check
+After cleanup, `.hermes/repo/` and `.hermes/synced/` differ only in:
+- `synced/nodes/` (cluster node metadata)
+- `synced/box-identity`
+
+This is correct: `synced/` holds runtime/cluster metadata on top of the clean `repo/` SSOT.

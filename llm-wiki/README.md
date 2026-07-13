@@ -10,6 +10,7 @@
 | [skills-index.md](skills-index.md) | All 186 skills across 32 categories with descriptions, platforms, and tags |
 | [model-fleet-index.md](model-fleet-index.md) | Local model fleet — agentic benchmark scores, roles, routing guide |
 | [cluster-rpc-fabric.md](cluster-rpc-fabric.md) | Multi-node llama.cpp RPC cluster setup |
+| [hermes-ssot.md](hermes-ssot.md) | Multi-node SSOT conventions — how worklog/llm-wiki are shared across nodes |
 | [hermes-web-dashboard.md](hermes-web-dashboard.md) | Dashboard setup and troubleshooting |
 | [hermes-desktop-update-troubleshooting.md](hermes-desktop-update-troubleshooting.md) | Desktop app update issues |
 | [hermes-folder-sync.md](hermes-folder-sync.md) | Cross-node Hermes folder sync via Obsidian, config hot-reload behavior |
