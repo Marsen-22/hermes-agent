@@ -13,7 +13,7 @@
 
 | Node | Host | OS | Role |
 |------|------|----|------|
-| `node1` | 192.168.50.101 | macOS 26.5 | Primary Hermes/LM Studio/LiteLLM host |
+| `node1` | 192.168.50.101 | macOS 26.5 | Primary Hermes host; local LM Studio; shared cloud APIs |
 | `node4` | 192.168.50.104 | Windows 11 | Hermes Windows / GPU node |
 
 ## Example header
