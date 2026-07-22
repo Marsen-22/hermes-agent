@@ -87,7 +87,13 @@ async function readGitignore(dir: string): Promise<GitignoreRule | null> {
 
     const text = decodeDataUrl(await readDesktopFileDataUrl(`${dir}/.gitignore`))
 
-    return { base: dir, ig: ignore().add(text) }
+    // `allowRelativePaths: true` is required: the desktop's file tree surfaces
+    // absolute filesystem paths, and `ignore()` defaults to `allowRelativePaths:
+    // false`, which throws `path should be a path.relative()'d string` on
+    // anything that starts with `/`. The gitignore patterns themselves are still
+    // matched correctly — this just turns the absolute-path input into a
+    // permissive call instead of a hard error.
+    return { base: dir, ig: ignore({ allowRelativePaths: true }).add(text) }
   } catch {
     return null
   }

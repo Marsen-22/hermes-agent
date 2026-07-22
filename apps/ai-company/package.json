@@ -1,0 +1,84 @@
+{
+  "name": "ai-company",
+  "productName": "AICompany",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AICompany desktop app — full access to the AICompany stack, framed on the Hermes desktop baseline.",
+  "author": "BUNTA Labs",
+  "type": "module",
+  "main": "dist/electron-main.mjs",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k \"npm:dev:renderer\" \"npm:dev:electron\"",
+    "dev:renderer": "vite --host 127.0.0.1 --port 5175",
+    "dev:electron": "wait-on http://127.0.0.1:5175 && node scripts/bundle-electron-main.mjs --dev && cross-env HERMES_DESKTOP_DEV_SERVER=http://127.0.0.1:5175 electron .",
+    "start": "npm run build && electron .",
+    "prebuild": "rm -rf dist && mkdir -p dist",
+    "build": "vite build && node scripts/bundle-electron-main.mjs",
+    "postbuild": "node scripts/assert-dist-built.mjs",
+    "pack": "npm run build && node scripts/run-electron-builder.mjs --dir",
+    "dist:mac": "npm run build && node scripts/run-electron-builder.mjs --mac",
+    "dist:win": "npm run build && node scripts/run-electron-builder.mjs --win",
+    "dist:linux": "npm run build && node scripts/run-electron-builder.mjs --linux",
+    "typecheck": "tsc -p . --noEmit && tsc -p tsconfig.electron.json --noEmit",
+    "test": "echo \"No tests yet\""
+  },
+  "dependencies": {
+    "@hermes/shared": "file:../shared",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^10.0.3",
+    "cross-env": "^10.1.0",
+    "electron": "^40.10.2",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.10",
+    "wait-on": "^9.0.5"
+  },
+  "build": {
+    "electronVersion": "40.10.2",
+    "appId": "com.aicompany.desktop",
+    "productName": "AICompany",
+    "executableName": "AICompany",
+    "artifactName": "AICompany-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "assets/**",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.developer-tools",
+      "extendInfo": {
+        "CFBundleDisplayName": "AICompany",
+        "CFBundleExecutable": "AICompany",
+        "CFBundleName": "AICompany"
+      },
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    },
+    "linux": {
+      "category": "Development",
+      "target": [
+        "AppImage"
+      ]
+    }
+  }
+}

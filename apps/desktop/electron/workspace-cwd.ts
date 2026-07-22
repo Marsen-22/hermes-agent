@@ -21,7 +21,16 @@ function isPackagedInstallPath(dir, { installRoots, isPackaged }: { installRoots
       return true
     }
 
-    const rel = path.relative(root, resolved) as any
+    // Node 22+ throws `RangeError: path should be a path.relative()'d string`
+    // when the result would be a path that goes above `root` AND contains
+    // another absolute segment. That's exactly the "not under this root"
+    // case we want to return false for, so treat a throw as not-inside.
+    let rel: string
+    try {
+      rel = path.relative(root, resolved) as any
+    } catch {
+      continue
+    }
 
     if (rel && !rel.startsWith('..') && !path.isAbsolute(rel)) {
       return true

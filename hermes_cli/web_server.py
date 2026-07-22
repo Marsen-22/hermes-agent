@@ -27,6 +27,11 @@ import importlib.util
 import json
 import logging
 import mimetypes
+
+# Windows mimetypes registry does not map .js → application/javascript
+# by default, causing browsers to block module scripts with MIME type
+# errors.  Add the mapping explicitly so the dashboard SPA loads.
+mimetypes.add_type("application/javascript", ".js")
 import os
 import re
 import secrets
