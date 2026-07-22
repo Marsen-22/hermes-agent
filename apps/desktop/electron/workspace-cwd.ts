@@ -26,6 +26,7 @@ function isPackagedInstallPath(dir, { installRoots, isPackaged }: { installRoots
     // another absolute segment. That's exactly the "not under this root"
     // case we want to return false for, so treat a throw as not-inside.
     let rel: string
+
     try {
       rel = path.relative(root, resolved) as any
     } catch {
