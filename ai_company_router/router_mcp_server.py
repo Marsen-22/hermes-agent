@@ -117,6 +117,12 @@ def main():
                     "id": req_id,
                     "error": {"code": -32603, "message": f"Router error: {exc}"},
                 })
+        elif method == "ping":
+            send({
+                "jsonrpc": "2.0",
+                "id": req_id,
+                "result": {},
+            })
         elif method == "notifications/initialized":
             pass
 
